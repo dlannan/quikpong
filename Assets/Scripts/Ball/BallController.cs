@@ -63,7 +63,12 @@ public class BallController : MonoBehaviour
         StoredPosition = StoredPosition + Direction * Speed * Time.deltaTime;
 
         // Reset if out of bounds!!
-        if (StoredPosition.z < -15.0f || StoredPosition.z > 15.0f)
+        if (StoredPosition.z < -15.0f )
+        {
+            ResetBall();
+            ScorePlayer(Score.PlayerOne);
+        }
+        if(StoredPosition.z > 15.0f)
         {
             ResetBall();
             ScorePlayer(Score.PlayerTwo);
