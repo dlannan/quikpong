@@ -25,3 +25,8 @@ desktop: 1920x1200 59Hz; virtual: 3840x1200 at 0,0
 <RI> Initialized touch support.
 Platform assembly: C:\Dev\GitHub\quikpong\ReleaseMP\QuikPong-NetworkPlay_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Dev\GitHub\quikpong\ReleaseMP\QuikPong-NetworkPlay_Data\Managed\System.dll (this message is harmless)
+Connected to client
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 65)
+
+Log: connection {1} has been disconnected by timeout; address {::ffff:127.0.0.1:64433}
