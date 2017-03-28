@@ -94,10 +94,10 @@ public class BallController : MonoBehaviour
             dir.z = -dir.z;
             Debug.Log("Wall3....");
         }
-        else if (other.gameObject == playerOne)
+        else if (other.gameObject == playerOne || other.gameObject == playerTwo)
         {
             dir.z = -dir.z;
-            Debug.Log("Bat One....");
+            Debug.Log("Bat Hit....");
         }
 
         Direction = dir;
