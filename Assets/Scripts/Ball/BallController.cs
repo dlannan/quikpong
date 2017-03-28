@@ -46,7 +46,7 @@ public class BallController : MonoBehaviour
             ResetBall();
     }
 
-    void FixedUpdate()
+    void LateUpdate()
     {
         transform.position = StoredPosition;
     }
