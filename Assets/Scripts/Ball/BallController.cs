@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class BallController : MonoBehaviour
@@ -11,16 +12,36 @@ public class BallController : MonoBehaviour
     public GameObject wall2;
     public GameObject wall3;
 
+    public Text ScoreUI1;
+    public Text ScoreUI2;
+
     public float Speed = 5.0f;
     private Vector3 Direction = new Vector3();
     private Vector3 StoredPosition = new Vector3();
+
+    // Player scores should go in a manager - here will do for time being
+    private int p1Score = 0;
+    private int p2Score = 0;
+    
+    enum Score
+    {
+        PlayerOne,
+        PlayerTwo
+    };
 
     // Use this for initialization
     void Start()
     {
         ResetBall();
+        ResetScore();
     }
 
+    void ResetScore()
+    {
+        p1Score = 0;
+        p2Score = 0;
+    }
+    
     // Everytime we need a new ball use this function
     void ResetBall()
     {
@@ -43,7 +64,10 @@ public class BallController : MonoBehaviour
 
         // Reset if out of bounds!!
         if (StoredPosition.z < -15.0f || StoredPosition.z > 15.0f)
+        {
             ResetBall();
+            ScorePlayer(Score.PlayerTwo);
+        }
     }
 
     void LateUpdate()
@@ -77,5 +101,20 @@ public class BallController : MonoBehaviour
         }
 
         Direction = dir;
+    }
+
+    void ScorePlayer(Score player)
+    {
+        if(player == Score.PlayerTwo)
+        {
+            p2Score++;
+            ScoreUI2.text = p2Score.ToString();
+        }
+
+        if (player == Score.PlayerOne)
+        {
+            p1Score++;
+            ScoreUI1.text = p1Score.ToString();
+        }
     }
 }
