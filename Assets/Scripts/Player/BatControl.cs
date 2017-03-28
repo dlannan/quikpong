@@ -59,4 +59,14 @@ public class BatControl : MonoBehaviour {
                 PlayerMove = -1.0f;
         }
     }
+
+    public void CommInput()
+    {
+
+    }
+
+    public void CommOutput()
+    {
+
+    }
 }

@@ -22,7 +22,11 @@ public class BallController : MonoBehaviour
     // Player scores should go in a manager - here will do for time being
     private int p1Score = 0;
     private int p2Score = 0;
-    
+
+    // Network Manager so we can call comms methods - set on connection (client or server)
+    private NetworkManager NetMgr;
+    private bool syncBall = false;
+
     enum Score
     {
         PlayerOne,
@@ -73,6 +77,12 @@ public class BallController : MonoBehaviour
             ResetBall();
             ScorePlayer(Score.PlayerTwo);
         }
+
+        // Sync ball if its enabled
+        if (syncBall == true)
+        {
+
+        }
     }
 
     void LateUpdate()
@@ -122,4 +132,11 @@ public class BallController : MonoBehaviour
             ScoreUI1.text = p1Score.ToString();
         }
     }
+
+    public void CommSyncStart(NetworkManager mgr)
+    {
+        NetMgr = mgr;
+        syncBall = true;
+    }
 }
+
