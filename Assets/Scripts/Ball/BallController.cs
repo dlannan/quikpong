@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 
-public class BallController : MonoBehaviour
+public class BallController : NetworkBehaviour
 {
 
     public GameObject playerOne;
@@ -27,6 +29,12 @@ public class BallController : MonoBehaviour
     private NetworkManager NetMgr;
     private bool syncBall = false;
 
+    // The data the ball shares - client <-> server
+    public SyncListFloat syncData;
+
+    // Target position is used on client to get to latest update
+    private Vector3 TargetPosition = new Vector3();
+
     enum Score
     {
         PlayerOne,
@@ -44,6 +52,7 @@ public class BallController : MonoBehaviour
     {
         p1Score = 0;
         p2Score = 0;
+        TargetPosition = StoredPosition;
     }
     
     // Everytime we need a new ball use this function
@@ -63,25 +72,38 @@ public class BallController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Always maintain Rigid body velocity (so it doesnt slow down)
-        StoredPosition = StoredPosition + Direction * Speed * Time.deltaTime;
+        if (syncBall == true)
+        {
+            // Sync ball if its enabled
+            if (NetMgr.IsServer())
+            {
+                syncData[0] = StoredPosition.x;
+                syncData[1] = StoredPosition.z;
+                syncData.Dirty(0);
+                syncData.Dirty(1);
+            }
+            else
+            {
+                TargetPosition.y = StoredPosition.y;
+                StoredPosition = Vector3.Lerp(StoredPosition, TargetPosition, Time.deltaTime + 0.01f);
+            }
+        }
+        else
+        {
+            // Always maintain Rigid body velocity (so it doesnt slow down)
+            StoredPosition = StoredPosition + Direction * Speed * Time.deltaTime;
+        }
 
         // Reset if out of bounds!!
-        if (StoredPosition.z < -15.0f )
+        if (StoredPosition.z < -15.0f)
         {
             ResetBall();
             ScorePlayer(Score.PlayerOne);
         }
-        if(StoredPosition.z > 15.0f)
+        if (StoredPosition.z > 15.0f)
         {
             ResetBall();
             ScorePlayer(Score.PlayerTwo);
-        }
-
-        // Sync ball if its enabled
-        if (syncBall == true)
-        {
-
         }
     }
 
@@ -90,29 +112,34 @@ public class BallController : MonoBehaviour
         transform.position = StoredPosition;
     }
 
+    void OnDataChanged(SyncListFloat.Operation op, int index)
+    {
+        if (index == 0) TargetPosition.x = syncData[index];
+        if (index == 1) TargetPosition.z = syncData[index];
+
+    }
+
     void OnTriggerEnter(Collider other)
     {
+        if (!NetMgr.IsServer())
+            return;
 
         var dir = Direction;
         if (other.gameObject == wall1)
         {
             dir.x = -dir.x;
-            Debug.Log("Wall1....");
         }
         else if (other.gameObject == wall2)
         {
             dir.x = -dir.x;
-            Debug.Log("Wall2....");
         }
         else if (other.gameObject == wall3)
         {
             dir.z = -dir.z;
-            Debug.Log("Wall3....");
         }
         else if (other.gameObject == playerOne || other.gameObject == playerTwo)
         {
             dir.z = -dir.z;
-            Debug.Log("Bat Hit....");
         }
 
         Direction = dir;
@@ -137,6 +164,21 @@ public class BallController : MonoBehaviour
     {
         NetMgr = mgr;
         syncBall = true;
+
+        // Only bother with x and z (can expand later)
+        syncData = new SyncListFloat();
+
+        if (mgr.IsServer())
+        {
+            syncData.Add(StoredPosition.x);
+            syncData.Add(StoredPosition.z);
+            syncData.Add(Direction.x);
+            syncData.Add(Direction.z);
+        }
+        else
+        {
+            syncData.Callback = this.OnDataChanged;
+        }
     }
 }
 

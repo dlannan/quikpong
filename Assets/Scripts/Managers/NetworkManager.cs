@@ -23,6 +23,7 @@ public class NetworkManager : MonoBehaviour
 
     NetworkClient myClient;
     private string nwState = "";
+    private bool isServer = false;
 
     // Open the Pause menu to make the user select a Host/Client setup
     void Start()
@@ -40,6 +41,11 @@ public class NetworkManager : MonoBehaviour
         }
     }
 
+    public bool IsServer()
+    {
+        return isServer;
+    }
+
     // Create a server and listen on a port
     public void SetupServer()
     {
@@ -50,6 +56,7 @@ public class NetworkManager : MonoBehaviour
         serverImg.SetActive(false);
         statusImg.SetActive(true);
         nwState = "Server Waiting";
+        isServer = true;
     }
 
     // Create a client and connect to the server port
@@ -63,6 +70,7 @@ public class NetworkManager : MonoBehaviour
         clientImg.SetActive(false);
         statusImg.SetActive(true);
         nwState = "Client Connecting";
+        isServer = false;
     }
 
     // client function
