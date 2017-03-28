@@ -8,9 +8,11 @@ public class NetworkManager : MonoBehaviour
 
     public bool isAtStartup = true;
     public string nwHost = "127.0.0.1";
+    public int nwPort = 4444;
 
     public GameObject serverImg;
     public GameObject clientImg;
+    public GameObject statusImg;
 
     NetworkClient myClient;
 
@@ -27,8 +29,11 @@ public class NetworkManager : MonoBehaviour
     // Create a server and listen on a port
     public void SetupServer()
     {
-        NetworkServer.Listen(4444);
+        NetworkServer.Listen(nwPort);
         isAtStartup = false;
+        clientImg.SetActive(false);
+        serverImg.SetActive(false);
+        statusImg.SetActive(true);
     }
 
     // Create a client and connect to the server port
@@ -36,16 +41,11 @@ public class NetworkManager : MonoBehaviour
     {
         myClient = new NetworkClient();
         myClient.RegisterHandler(MsgType.Connect, OnConnected);
-        myClient.Connect(nwHost, 4444);
+        myClient.Connect(nwHost, nwPort);
         isAtStartup = false;
-    }
-
-    // Create a local client and connect to the local server
-    public void SetupLocalClient()
-    {
-        myClient = ClientScene.ConnectLocalServer();
-        myClient.RegisterHandler(MsgType.Connect, OnConnected);
-        isAtStartup = false;
+        serverImg.SetActive(false);
+        clientImg.SetActive(false);
+        statusImg.SetActive(true);
     }
 
     // client function
